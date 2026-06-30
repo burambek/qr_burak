@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../theme.dart';
+import '../utils/ui_helpers.dart';
 import 'scanner_screen.dart';
 import 'list_screen.dart';
 
@@ -14,27 +15,10 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       extendBody: true, // IMPORTANT: Allows body to extend behind bottom nav
       appBar: AppBar(
-        title: Row(
-          children: [
-            // Always show the logo
-            Image.asset('assets/images/logo.png', height: 40),
-            const Spacer(),
-            // Keep your 12h Count Badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                  color: kGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8)
-              ),
-              child: Text(
-                  "12г: ${provider.scanCountLast12h}",
-                  style: const TextStyle(fontSize: 14, color: kGreen)
-              ),
-            ),
-          ],
-        ),
+        title: Image.asset('assets/images/logo.png', height: 40),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: () => _onRefresh(context)),
+          if (provider.currentTabIndex == 0)
+            IconButton(icon: const Icon(Icons.refresh), onPressed: () => _onRefresh(context)),
           IconButton(icon: const Icon(Icons.logout), onPressed: () => context.read<AppProvider>().logout()),
         ],
       ),
@@ -89,12 +73,14 @@ class HomeScreen extends StatelessWidget {
 
   Future<void> _onRefresh(BuildContext context) async {
     final provider = context.read<AppProvider>();
-    await provider.refreshFields(); // <-- REMOVE THE ARGUMENT
+    await provider.refreshFields();
     if (!context.mounted) return;
-    _showSnack(context, provider.errorMessage ?? 'Успішно оновлено', isError: provider.errorMessage != null);
-  }
-
-  void _showSnack(BuildContext context, String msg, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: isError ? kErrorRed : kGreen));
+    
+    await UIHelpers.showStyledDialog(
+      context, 
+      isSuccess: provider.errorMessage == null, 
+      title: provider.errorMessage == null ? "Успішно оновлено" : "Помилка",
+      message: provider.errorMessage,
+    );
   }
 }

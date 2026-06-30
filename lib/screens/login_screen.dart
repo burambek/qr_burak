@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _loginError;
 
   @override
   void dispose() {
@@ -26,12 +27,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-    await context.read<AppProvider>().login(
+
+    setState(() {
+      _isLoading = true;
+      _loginError = null;
+    });
+
+    final provider = context.read<AppProvider>();
+    final success = await provider.login(
       _loginController.text.trim(),
       _passwordController.text.trim(),
     );
-    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+      if (!success) {
+        _loginError = provider.errorMessage;
+      }
+    });
   }
 
   @override
@@ -54,16 +69,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 90,
                       height: 90,
                       decoration: BoxDecoration(
-                        color: kGreen, // Your green background
+                        color: kGreen,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: kButtonShadow,
                       ),
-                      // Replace the Center and Text with your Image
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0), // Adjust padding so the logo isn't touching the edges
+                        padding: const EdgeInsets.all(16.0),
                         child: Image.asset(
-                          'assets/images/logo.png', // Ensure this matches your file path
-                          fit: BoxFit.contain,      // Ensures the whole logo is visible
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
@@ -135,6 +149,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
+
+                  // ── Error message ──────────────────
+                  if (_loginError != null) ...[
+                    const SizedBox(height: 14),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: kErrorLight,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: kErrorRed.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline,
+                              color: kErrorRed, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _loginError!,
+                              style: const TextStyle(
+                                color: kErrorRed,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
                   const SizedBox(height: 24),
 
                   // ── Login button ───────────────────

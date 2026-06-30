@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+
+//
+const kApiGetFields = 'https://cza.sytes.net:6587/IgorZavod/hs/Zav/GetFields';
+const kApiGetTTN    = 'https://cza.sytes.net:6587/IgorZavod/hs/Zav/GetTTN';
+const kApiWriteTTN  = 'https://cza.sytes.net:6587/IgorZavod/hs/Zav/WriteTTN';
+const kApiListTTN = 'https://cza.sytes.net:6587/IgorZavod/hs/Zav/ListTTN';
+
 // ── Brand colors ──────────────────────────────────────
 const kGreen        = Color(0xFF2E7D32);
 const kGreenLight   = Color(0xFFE8F5E9);
@@ -45,14 +52,6 @@ const kButtonShadow = [
 
 
 
-//
-
-const String kBaseUrl = 'http://192.168.0.40:3000';
-const String kApiRefresh = '$kBaseUrl/refresh';
-const String kApiSubmit = '$kBaseUrl/scan';
-const String kApiList = '$kBaseUrl/list';
-const String kApiInfo = '$kBaseUrl/info';
-const String kApiFields = '$kBaseUrl/fields';
 
 // ── App theme ─────────────────────────────────────────
 final appTheme = ThemeData(
@@ -107,7 +106,7 @@ final appTheme = ThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       textStyle: const TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w600,
@@ -123,7 +122,7 @@ final appTheme = ThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       textStyle: const TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w600,
